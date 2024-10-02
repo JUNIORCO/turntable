@@ -169,7 +169,6 @@ const UpdateWorkspaceForm = ({ workspace, enabled }: any) => {
                 </FormItem>
               )}
             />
-
             {enabled && <LoaderButton
               isLoading={isLoading}
               className="float-right"

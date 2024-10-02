@@ -44,6 +44,29 @@ class WorkspaceViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         workspace = self.get_object()
         workspace.name = request.data.get("name", workspace.name)
+        
+        provider_in_use = request.data.get("provider_in_use")
+        if provider_in_use is not None:
+            if provider_in_use.strip():
+                workspace.provider_in_use = provider_in_use
+            else:
+                workspace.provider_in_use = None
+        
+        openai_api_key = request.data.get("openai_api_key")
+        anthropic_api_key = request.data.get("anthropic_api_key")
+        
+        if openai_api_key is not None:
+            if openai_api_key.strip():
+                workspace.openai_api_key = openai_api_key
+            else:
+                workspace.openai_api_key = None
+        
+        if anthropic_api_key is not None:
+            if anthropic_api_key.strip():
+                workspace.anthropic_api_key = anthropic_api_key
+            else:
+                workspace.anthropic_api_key = None
+
         if "icon_file" in request.data:
             workspace.icon_file = request.data["icon_file"]
             workspace.save()  # Save to ensure the file is uploaded

@@ -23,6 +23,7 @@ import LineagePreview from "@/components/lineage/LineagePreview"
 function ColumnsTable({ columns }: {
     columns: {
         name: string
+        ai_description: string
         type: string
         description: string
         tests: string[]
@@ -45,7 +46,10 @@ function ColumnsTable({ columns }: {
                     <TableRow key={column.name} className="text-gray-500">
                         <TableCell className="text-black font-medium pl-4">{column.name}</TableCell>
                         <TableCell>{column.type}</TableCell>
-                        <TableCell className="pr-4">{column.description}</TableCell>
+                        <TableCell className="pr-4">
+                            {column.description ? null : <Badge variant='outline' className="mr-2">AI Generated</Badge>}
+                            {column.description || column.ai_description}
+                            </TableCell>
                         <TableCell>{column.tests?.map((test) => <Badge variant='secondary' key={test}>{test}</Badge>)}</TableCell>
                         <TableCell>{column.is_unused && <Badge variant='outline'>Unused</Badge>}</TableCell>
                     </TableRow>
@@ -113,7 +117,7 @@ export default async function AssetPage({ params }: { params: { id: string } }) 
                         <Card className="rounded-md">
                             <CardContent className="p-4">
                                 <div>
-                                    {asset.description ? <p className="text-sm">{asset.description}</p> : <p className="text-sm italic">No description</p>}
+                                    {asset.description ? <p className="text-sm">{asset.description}</p> : asset.ai_description ? <p className="text-sm"><Badge variant="secondary" className="text-muted-foreground mr-2">AI Generated</Badge>{asset.ai_description}</p> : <p className="text-sm italic">No description</p>}
                                 </div>
                             </CardContent>
                         </Card>

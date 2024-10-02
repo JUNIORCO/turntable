@@ -106,7 +106,22 @@ export const columns: ColumnDef<Asset>[] = [
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Description" />
         ),
-        cell: ({ row }) => <div className="w-[300px]">{row.getValue("description")}</div>,
+        cell: ({ row }) => {
+            const description = row.getValue("description") as string | null;
+            const ai_description = row.original.ai_description as string | null;
+            const content = description || ai_description;
+
+            if (!content) return null;
+
+            return (
+                <div className="w-[300px]">
+                    {ai_description && (
+                        <Badge variant="secondary" className="text-muted-foreground mr-2">AI Generated</Badge>
+                    )}
+                    {content.length > 100 ? `${content.slice(0, 100)}...` : content}
+                </div>
+            );
+        },
         enableSorting: false,
         enableHiding: true,
     },

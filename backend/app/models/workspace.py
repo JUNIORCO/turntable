@@ -4,6 +4,7 @@ from django.contrib.auth.models import (
 )
 from django.db import models
 
+from app.utils.fields import encrypt
 from app.models.user import User
 from app.services.storage_backends import PublicMediaStorage
 from django.contrib.postgres.fields import ArrayField
@@ -11,6 +12,11 @@ from django.contrib.postgres.fields import ArrayField
 
 def generate_short_uuid():
     return uuid.uuid4().hex[:6]
+
+
+class Provider(models.TextChoices):
+    OPENAI = "openai", "OpenAI"
+    ANTHROPIC = "anthropic", "Anthropic"
 
 
 class Workspace(models.Model):
@@ -25,6 +31,14 @@ class Workspace(models.Model):
     users = models.ManyToManyField(User, related_name="workspaces")
     assets_exclude_name_contains = ArrayField(
         models.CharField(max_length=255), default=list
+    )
+    openai_api_key = encrypt(models.CharField(max_length=255, blank=False, null=True))
+    anthropic_api_key = encrypt(models.CharField(max_length=255, blank=False, null=True))
+    provider_in_use = models.CharField(
+        max_length=20,
+        choices=Provider.choices,
+        blank=True,
+        null=True,
     )
 
     class Meta:

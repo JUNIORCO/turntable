@@ -34,7 +34,7 @@ const fetchWithAuth = async (url: string, options = {} as any) => {
                 }
             }
 
-            return retryResponse.json();
+            return retryResponse;
         } catch (err) {
             removeTokens();
             if (typeof window !== "undefined") {

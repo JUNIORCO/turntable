@@ -41,6 +41,7 @@ import useSession from "@/app/hooks/use-session";
 import { fetcher } from "../fetcher";
 import { LoaderButton } from "@/components/ui/LoadingSpinner";
 import { getWorkspace } from "../actions/actions";
+import UpdateApiKeysForm from "@/components/workspaces/update-api-keys-form";
 
 export default function Page() {
   const [workspace, setWorkspace] = React.useState<any>({});
@@ -284,6 +285,19 @@ export default function Page() {
               </LoaderButton>
             )}
           </CardFooter>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>API Keys</CardTitle>
+          </CardHeader>
+          <CardContent style={{ paddingBottom: 20 }}>
+            {workspace && (
+              <UpdateApiKeysForm
+                workspace={workspace}
+                enabled={role === "Admin"}
+              />
+            )}
+          </CardContent>
         </Card>
       </div>
     </FullWidthPageLayout>

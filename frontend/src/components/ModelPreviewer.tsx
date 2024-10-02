@@ -70,12 +70,14 @@ export default function ModelPreviewer({ asset, context, clearAsset }: { context
                                     <div className='font-medium text-gray-700'>{asset.table_name}</div>
                                 </div>
                                 <div>
-                                    <div>
+                                    <div className='flex items-center gap-2'>
                                         Description
+                                        {asset.ai_description && <Badge variant="primary">AI Generated</Badge>}
                                     </div>
                                     {asset.description ? (
                                         <div className='font-medium'>{asset.description}</div>
-
+                                    ) : asset.ai_description ? (
+                                        <div className='font-medium'>{asset.ai_description}</div>
                                     ) : (
                                         <div className='italic text-muted-foreground opacity-60'>No description</div>
                                     )}

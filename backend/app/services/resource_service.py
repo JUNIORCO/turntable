@@ -299,12 +299,21 @@ class ResourceService:
         resource = await Resource.objects.aget(id=resource_id, workspace=self.workspace)
         if resource is None:
             raise ValidationError("Resource not found.")
-
+        
+        provider_in_use = self.workspace.provider_in_use
+        if provider_in_use == "openai":
+            ai_options = {"llm_api_key": self.workspace.openai_api_key, "model_name": "gpt-4o-mini"}
+        elif provider_in_use == "anthropic":
+            ai_options = {"llm_api_key": self.workspace.anthropic_api_key, "model_name": "claude-3-haiku-20240307"}
+        else:
+            ai_options = None
+            
         workflow_run = hatchet.client.admin.run_workflow(
             "MetadataSyncWorkflow",
             {
                 "workspace_id": self.workspace.id,
                 "resource_id": resource_id,
+                "ai_options": ai_options,
             },
         )
 

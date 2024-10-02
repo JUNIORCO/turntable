@@ -7,7 +7,8 @@ from app.models import Resource
 from app.models.resources import ResourceSubtype
 from workflows.hatchet import hatchet
 from workflows.utils.log import inject_workflow_run_logging
-
+from workflows.utils.debug import spawn_workflow
+from workflows.generate_docs import GenerateDocsWorkflow
 
 @hatchet.workflow(on_events=["metadata_sync"], timeout="15m")
 @inject_workflow_run_logging(hatchet)
@@ -17,7 +18,12 @@ class MetadataSyncWorkflow:
         {
             resource_id: str,
             workunits: Optional[int],
-            use_ai: bool
+            ai_options: Optional[dict(
+                llm_api_key: str,
+                model_name: str,
+                max_columns_per_batch: Optional[int],
+                max_ai_workers: Optional[int],
+            )]
         }
     """
 
@@ -39,7 +45,9 @@ class MetadataSyncWorkflow:
 
     @hatchet.step(timeout="120m", parents=["ingest_metadata"])
     def process_metadata(self, context: Context):
-        resource = Resource.objects.get(id=context.workflow_input()["resource_id"])
+        resource_id = context.workflow_input()["resource_id"]
+        resource = Resource.objects.get(id=resource_id)
+        ai_options = context.workflow_input().get("ai_options")
         with resource.datahub_db.open("rb") as f:
             with tempfile.NamedTemporaryFile(
                 "wb", delete=False, suffix=".duckdb"
@@ -49,3 +57,11 @@ class MetadataSyncWorkflow:
                 parser.parse()
 
         DataHubDBParser.combine_and_upload([parser], resource)
+
+        if ai_options:
+            payload = {
+                "resource_id": str(resource.id),
+                "ai_options": ai_options,
+            }
+            print("CALLING GenerateDocsWorkflow")
+            spawn_workflow(context, GenerateDocsWorkflow, payload)

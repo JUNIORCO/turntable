@@ -137,7 +137,16 @@ class WorkspaceDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Workspace
-        fields = ["id", "name", "icon_url", "icon_file", "users"]
+        fields = [
+            "id", 
+            "name", 
+            "icon_url", 
+            "icon_file", 
+            "users", 
+            "openai_api_key", 
+            "anthropic_api_key", 
+            "provider_in_use",
+        ]
         depth = 1
 
 
@@ -173,6 +182,8 @@ class AssetIndexSerializer(serializers.ModelSerializer):
             "resource_id",
             "column_count",
             "unused_columns_count",
+            "ai_description",
+            "description"
         ]
 
 
@@ -197,6 +208,7 @@ class AssetSerializer(serializers.ModelSerializer):
             "name",
             "columns",
             "description",
+            "ai_description",
             "url",
             "type",
             "tags",
